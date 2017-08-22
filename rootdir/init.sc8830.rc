@@ -144,6 +144,9 @@ on boot
 
     chown system system /sys/class/graphics/fb0/dynamic_mipi_clk
 
+    # To prevent permission denied error for telephony
+    chmod 0644 /proc/cmdline
+
 on charger
 
     exec sfsck /dev/block/mmcblk0p23 ext4
