@@ -30,6 +30,11 @@ on init
     symlink /storage/extSdCard /mnt/extSdCard
     symlink /storage/usbdisk /mnt/usbdisk
 
+    # KSM options
+    write /sys/kernel/mm/ksm/pages_to_scan 100
+    write /sys/kernel/mm/ksm/sleep_millisecs 500
+    write /sys/kernel/mm/ksm/run   1
+
 on fs
     mount_all /fstab.sc8830
     mount pstore pstore /sys/fs/pstore
@@ -48,6 +53,9 @@ on post-fs
     chown system system /productinfo
     chmod 0771 /productinfo
     insmod /system/lib/modules/mali.ko
+
+    swapon_all fstab.sc8830
+    write /proc/sys/vm/page-cluster  0
 
 on post-fs-data
 
@@ -165,10 +173,6 @@ on alarm
     start console
     start slog
 
-on property:ro.config.zram.support=true
-    write /proc/sys/vm/page-cluster  0
-    start zram
-
 on property:ro.modem.t.count=1
     write /proc/sim/0 t
 
@@ -192,11 +196,6 @@ on property:ro.modem.w.count=3
     write /proc/sim/0 w
     write /proc/sim/1 w
     write /proc/sim/2 w
-
-on property:ro.config.ksm.support=true
-    write /sys/kernel/mm/ksm/pages_to_scan 100
-    write /sys/kernel/mm/ksm/sleep_millisecs 500
-    write /sys/kernel/mm/ksm/run   1
 
 service charge /bin/charge
     class charger
